@@ -2,9 +2,12 @@ import { Injectable } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 import { Observable } from 'rxjs';
 
-const PERFORM_TASK = gql`
-subscription performTask($task: TaskInput) {
-	agentTaskExecute(task: $task) {
+const AGENT_SEND_MESSAGE = gql`
+subscription sendMessage($message: MessageInput) {
+	agentSendMessage(message: $message) {
+    messageId
+    contextId
+    taskId
   	parts {
       ...on TextPart {
         text
@@ -23,14 +26,13 @@ subscription performTask($task: TaskInput) {
   
     constructor(private readonly apollo: Apollo) { }
   
-    agentPerformTask(question: string): Observable<any> {
+    agentSendMessage(question: string): Observable<any> {
       return this.apollo.subscribe<any>({
-        query: PERFORM_TASK,
+        query: AGENT_SEND_MESSAGE,
         variables: {
-            task: {
-                id: '1111-2222-3333-4444',
+            message: {
                 contextId: 'Test',
-                message: question,
+                text: question,
               },
         },      
       })

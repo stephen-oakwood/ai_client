@@ -41,9 +41,9 @@ export class AppComponent {
 
   sendToAgent(question: string) {
 
-      this.agentService.agentPerformTask(question).subscribe({
+      this.agentService.agentSendMessage(question).subscribe({
         next: (result) => {
-          let agentResponse:AgentResponse = result.data?.agentTaskExecute;
+          let agentResponse:AgentResponse = result.data?.agentSendMessage;
 
           this.messages = [...this.messages, {
             author: this.assistant,
