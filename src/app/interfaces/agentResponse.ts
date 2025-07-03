@@ -1,10 +1,23 @@
 import { TextPart } from "./textPart";
 
 export interface AgentResponse {
-    messageId: string;
-    contextId: string;
-    taskId: string;
-    parts: TextPart[];
-    responseType: string; 
-    responseState: string; 
+    processingResult: {
+        __typename: string;
+        taskId?: string;
+        contextId?: string;
+        status?: {
+            state: string;
+            message: {
+                messageId: string;
+                role: string;
+                parts: TextPart[];
+            };
+        };
+        artifact?: {
+            artifactId: string;
+            name: string;
+            description: string;
+            parts: TextPart[];
+        };
+    };
 }

@@ -43,19 +43,28 @@ export class AppComponent {
 
       this.agentService.agentSendMessage(question).subscribe({
         next: (result) => {
-          let agentResponse:AgentResponse = result.data?.agentSendMessage;
+          let agentResponse: AgentResponse = result.data?.agentSendMessage;
+          console.log("AGENT RESPONSE:", agentResponse);
 
-          this.messages = [...this.messages, {
-            author: this.assistant,
-            timestamp: Date.now(),
-            text: agentResponse.parts.map(part => part.text).join(' ')
-          }];
+          if (agentResponse.processingResult.__typename === 'TaskStatusUpdate') {
+            const messageParts = agentResponse.processingResult.status?.message?.parts;
+            this.messages = [...this.messages, {
+              author: this.assistant,
+              timestamp: Date.now(),
+              text: messageParts ? messageParts.map(part => part.text).join(' ') : ''
+            }];
+          }
 
-          if (agentResponse.responseType === 'TaskArtifactUpdateEvent') {
+          if (agentResponse.processingResult.__typename === 'TaskArtifactUpdate') {
+            const messageParts = agentResponse.processingResult.artifact?.parts;
+            this.messages = [...this.messages, {
+              author: this.assistant,
+              timestamp: Date.now(),
+              text: messageParts ? messageParts.map(part => part.text).join(' ') : ''
+            }];
             this.typingUsers = [];
           }
 
-          console.log("AGENT RESPONSE:", agentResponse);
         },
         error: (error) => {
           console.error('Subscription error:', error);
