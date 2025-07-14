@@ -20,6 +20,7 @@ export class AppComponent {
   typingUsers: DxChatTypes.User[] = [];
   disabled: boolean = false;
   agentService: AgentService = inject(AgentService);
+  currentTask: string = "";
 
   technician: DxChatTypes.User = {
     id: '1',
@@ -41,7 +42,7 @@ export class AppComponent {
 
   sendToAgent(question: string) {
 
-      this.agentService.agentSendMessage(question).subscribe({
+      this.agentService.agentSendMessage(question, this.currentTask).subscribe({
         next: (result) => {
           let agentResponse: AgentResponse = result.data?.agentSendMessage;
           console.log("AGENT RESPONSE:", agentResponse);
@@ -53,6 +54,12 @@ export class AppComponent {
               timestamp: Date.now(),
               text: messageParts ? messageParts.map(part => part.text).join(' ') : ''
             }];
+
+            if (agentResponse.processingResult.status?.state === 'input-required') {
+              this.currentTask = agentResponse.processingResult.taskId || ''; 
+            } else {
+              this.currentTask = ''; // Reset current task if not UserInputRequired
+            }
           }
 
           if (agentResponse.processingResult.__typename === 'TaskArtifactUpdate') {

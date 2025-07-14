@@ -80,12 +80,13 @@ subscription agentSendMessage($message: MessageInput) {
   
     constructor(private readonly apollo: Apollo) { }
   
-    agentSendMessage(question: string): Observable<any> {
+    agentSendMessage(question: string, task: string): Observable<any> {
       return this.apollo.subscribe<any>({
         query: AGENT_SEND_MESSAGE,
         variables: {
             message: {
                 contextId: 'Test',
+                taskId: task,
                 text: question,
               },
         },      
